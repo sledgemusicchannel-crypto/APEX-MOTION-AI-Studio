@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <title>APEX MOTION AI Studio | Movie & Music Video Prompt Creator</title>
+  
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    if (typeof tailwind !== 'undefined') {
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              brand: {
+                50: '#eef2ff',
+                100: '#e0e7ff',
+                500: '#6366f1',
+                600: '#4f46e5',
+                700: '#4338ca',
+              }
+            }
+          }
+        }
+      };
+    }
+  </script>
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.15); }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(99, 102, 241, 0.55); border-radius: 3px; }
+    body { -webkit-tap-highlight-color: transparent; background-color: #0f172a; color: #f3f4f6; }
+  </style>
+</head>
+<body class="bg-slate-950 text-gray-100 min-h-screen font-sans flex flex-col selection:bg-indigo-500 selection:text-white">
+
+  <!-- Header / Navbar -->
+  <header class="border-b border-slate-800 bg-slate-900/95 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-3 sm:px-4 py-3 flex items-center justify-between gap-2">
+      <div class="flex items-center space-x-2.5 min-w-0">
+        <div class="bg-gradient-to-br from-indigo-600 to-purple-600 text-white p-2.5 rounded-xl shadow-lg shadow-indigo-600/30 shrink-0">
+          <i class="fa-solid fa-clapperboard text-base text-amber-300"></i>
+        </div>
+        <div class="min-w-0">
+          <h1 class="font-bold text-sm sm:text-base md:text-lg text-white leading-tight flex items-center gap-1.5 truncate">
+            <span class="truncate">APEX MOTION AI Studio</span>
+            <span class="text-[10px] font-semibold px-2 py-0.5 bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 rounded-full shrink-0">v2.0</span>
+          </h1>
+          <p class="text-[11px] text-gray-400 truncate">AI Movie, Music Video Prompt & Creator Suite</p>
+        </div>
+      </div>
+      <div class="flex items-center space-x-1.5 shrink-0">
+        <button onclick="generateAndDownloadAppIcon()" title="Download 512x512 PNG App Icon for WebIntoApps" class="px-2.5 py-2 bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 rounded-lg text-xs font-medium flex items-center gap-1.5 transition">
+          <i class="fa-solid fa-icons"></i>
+          <span class="hidden sm:inline">512x512 Icon</span>
+        </button>
+        <button onclick="exportAllDraftsJson()" title="Backup All Drafts" class="p-2 bg-slate-800 hover:bg-slate-700 text-gray-300 rounded-lg text-xs flex items-center gap-1.5 transition">
+          <i class="fa-solid fa-download"></i>
+          <span class="hidden md:inline">Backup</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="flex-1 max-w-6xl w-full mx-auto p-3 sm:p-4 space-y-5">
+
+    <!-- Tab Navigation -->
+    <div class="flex space-x-2 border-b border-slate-800 overflow-x-auto pb-2 custom-scrollbar">
+      <button onclick="switchTab('motion')" id="tab-motion" class="tab-btn px-3.5 py-2.5 rounded-lg font-medium text-xs md:text-sm flex items-center space-x-2 bg-indigo-600 text-white shrink-0 shadow-md transition">
+        <i class="fa-solid fa-film text-amber-300"></i>
+        <span>Movie & MV Studio</span>
+      </button>
+      <button onclick="switchTab('songwriter')" id="tab-songwriter" class="tab-btn px-3.5 py-2.5 rounded-lg font-medium text-xs md:text-sm flex items-center space-x-2 bg-slate-800 text-gray-400 hover:text-white shrink-0 transition">
+        <i class="fa-solid fa-music text-pink-400"></i>
+        <span>Song Writer</span>
+      </button>
+      <button onclick="switchTab('story')" id="tab-story" class="tab-btn px-3.5 py-2.5 rounded-lg font-medium text-xs md:text-sm flex items-center space-x-2 bg-slate-800 text-gray-400 hover:text-white shrink-0 transition">
+        <i class="fa-solid fa-feather-pointed text-purple-400"></i>
+        <span>Story & Script</span>
+      </button>
+      <button onclick="switchTab('thumbnail')" id="tab-thumbnail" class="tab-btn px-3.5 py-2.5 rounded-lg font-medium text-xs md:text-sm flex items-center space-x-2 bg-slate-800 text-gray-400 hover:text-white shrink-0 transition">
+        <i class="fa-solid fa-image text-amber-400"></i>
+        <span>Thumbnail Studio</span>
+      </button>
+      <button onclick="switchTab('seo')" id="tab-seo" class="tab-btn px-3.5 py-2.5 rounded-lg font-medium text-xs md:text-sm flex items-center space-x-2 bg-slate-800 text-gray-400 hover:text-white shrink-0 transition">
+        <i class="fa-solid fa-chart-line text-emerald-400"></i>
+        <span>SEO Engine</span>
+      </button>
+      <button onclick="switchTab('audit')" id="tab-audit" class="tab-btn px-3.5 py-2.5 rounded-lg font-medium text-xs md:text-sm flex items-center space-x-2 bg-slate-800 text-gray-400 hover:text-white shrink-0 transition">
+        <i class="fa-solid fa-bullseye text-cyan-400"></i>
+        <span>Growth Auditor</span>
+      </button>
+      <button onclick="switchTab('hooks')" id="tab-hooks" class="tab-btn px-3.5 py-2.5 rounded-lg font-medium text-xs md:text-sm flex items-center space-x-2 bg-slate-800 text-gray-400 hover:text-white shrink-0 transition">
+        <i class="fa-solid fa-fire text-amber-400"></i>
+        <span>Viral Hooks</span>
+      </button>
+      <button onclick="switchTab('drafts')" id="tab-drafts" class="tab-btn px-3.5 py-2.5 rounded-lg font-medium text-xs md:text-sm flex items-center space-x-2 bg-slate-800 text-gray-400 hover:text-white shrink-0 transition">
+        <i class="fa-solid fa-bookmark text-amber-400"></i>
+        <span>Saved (<span id="draft-count">0</span>)</span>
+      </button>
+    </div>
+
+    <!-- 1. MOVIE & MUSIC VIDEO PROMPT STUDIO (PIPPIT / KLING STYLE) -->
+    <section id="section-motion" class="tab-content space-y-4">
+      <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+          <div>
+            <h2 class="text-base md:text-lg font-semibold text-white flex items-center gap-2">
+              <i class="fa-solid fa-film text-amber-400"></i>
+              AI Movie & Music Video Prompt Studio
+            </h2>
+            <p class="text-xs text-gray-400">Generate Pippit / Kling-ready scene-by-scene visual prompts from your movie script, song lyrics, or audio file.</p>
+          </div>
+          <!-- Mode Switcher -->
+          <div class="flex bg-slate-950 p-1 rounded-xl border border-slate-800 shrink-0">
+            <button type="button" onclick="setMotionMode('mv')" id="mode-btn-mv" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white transition">
+              <i class="fa-solid fa-music mr-1"></i> Music Video
+            </button>
+            <button type="button" onclick="setMotionMode('movie')" id="mode-btn-movie" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-400 hover:text-white transition">
+              <i class="fa-solid fa-video mr-1"></i> AI Movie
+            </button>
+          </div>
+        </div>
+
+        <!-- Audio File Uploader (Local Metadata Reader - Crash Safe) -->
+        <div id="mv-audio-box" class="bg-slate-950/80 border border-dashed border-indigo-500/40 rounded-xl p-3.5 space-y-2">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <label class="text-xs font-semibold text-indigo-300 flex items-center gap-2 cursor-pointer">
+              <i class="fa-solid fa-file-audio text-base text-pink-400"></i>
+              <span>Load Music File (.MP3, .WAV, .M4A) to Auto-Sync Scene Timestamps</span>
+            </label>
+            <input type="file" id="mv-audio-file" accept="audio/*" onchange="handleAudioUpload(event)" class="text-xs text-gray-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer" />
+          </div>
+          <p id="mv-audio-info" class="text-[11px] text-emerald-400 hidden"></p>
+        </div>
+
+        <!-- Visual Controls -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-gray-300 mb-1">Title / Track Name</label>
+            <input type="text" id="motion-title" placeholder="e.g. Midnight Neon Dreams" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-gray-100 focus:outline-none focus:border-indigo-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-300 mb-1">Visual Style (Kling / Pippit)</label>
+            <select id="motion-style" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-gray-100 focus:outline-none focus:border-indigo-500">
+              <option value="Cinematic 35mm Film, anamorphic lens flare, moody shadows, 4K hyper-realistic">Cinematic 35mm Film (Realistic)</option>
+              <option value="Cyberpunk neon night, rain-slicked streets, volumetric fog, Unreal Engine 5">Cyberpunk / Neon Music Video</option>
+              <option value="High-fashion luxury hip-hop aesthetic, slow-motion gimbal, golden hour backlight">Hip-Hop / Luxury Aesthetic</option>
+              <option value="Dark fantasy drama, dramatic chiaroscuro lighting, epic wide shots, IMAX quality">Dark Epic Movie Drama</option>
+              <option value="Stylized Japanese anime film, Makoto Shinkai sky lighting, vibrant colors">Anime / Stylized Animation</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-300 mb-1">Camera Motion</label>
+            <select id="motion-camera" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-gray-100 focus:outline-none focus:border-indigo-500">
+              <option value="Dynamic FPV drone sweep + smooth dolly push-in">Dynamic Drone + Dolly Push</option>
+              <option value="Slow-motion 120fps tracking shot following main subject">Slow-Mo Subject Tracking</option>
+              <option value="Dramatic low-angle orbit shot with rack focus">Low-Angle 360° Orbit</option>
+              <option value="Handheld intimate close-up with natural film grain">Handheld Intimate Close-Up</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-300 mb-1">Aspect Ratio & Pacing</label>
+            <select id="motion-ratio" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-gray-100 focus:outline-none focus:border-indigo-500">
+              <option value="16:9 Widescreen (YouTube / Cinema)">16:9 Widescreen (Movie / MV)</option>
+              <option value="9:16 Vertical (TikTok / Reels / Shorts)">9:16 Vertical (Reels / TikTok)</option>
+              <option value="2.39:1 Anamorphic CinemaScope">2.39:1 Ultra-Wide Cinema</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Script / Song Lyrics Input -->
+        <div class="space-y-1.5">
+          <div class="flex justify-between items-center">
+            <label id="motion-input-label" class="text-xs font-semibold text-gray-300">Paste Song Lyrics or Movie Scene Script (Each line/stanza becomes a visual scene)</label>
+            <button type="button" onclick="loadSampleLyricsForMotion()" class="text-[11px] text-indigo-400 hover:text-indigo-300 underline">Insert Sample Lyrics</button>
+          </div>
+          <textarea id="motion-script-input" rows="5" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3.5 text-xs md:text-sm text-gray-200 focus:outline-none focus:border-indigo-500 custom-scrollbar" placeholder="Paste your song lyrics (Verse 1, Chorus...) or movie scene actions here..."></textarea>
+        </div>
+
+        <button type="button" onclick="generateMotionPrompts()" class="w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-semibold rounded-xl text-xs md:text-sm transition flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/25">
+          <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Scene-by-Scene AI Video Prompts
+        </button>
+
+        <!-- Output with Dedicated Copy Tab Bar -->
+        <div class="bg-slate-950 border border-slate-800 rounded-xl overflow-hidden">
+          <div class="flex flex-wrap items-center justify-between gap-2 bg-slate-900 px-3.5 py-2.5 border-b border-slate-800">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold text-amber-400"><i class="fa-solid fa-terminal mr-1"></i> Prompt Output</span>
+              <span id="motion-scene-badge" class="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-gray-300">0 Scenes</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <button type="button" onclick="copyToClipboard('motion-output')" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition shadow">
+                <i class="fa-regular fa-copy"></i> Copy All Prompts
+              </button>
+              <button type="button" onclick="saveMotionAsDraft()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-gray-200 rounded-lg text-xs font-medium transition">
+                Save Draft
+              </button>
+            </div>
+          </div>
+          <textarea id="motion-output" rows="10" readonly class="w-full bg-transparent p-3.5 text-xs text-gray-200 font-mono leading-relaxed focus:outline-none resize-y custom-scrollbar" placeholder="Your formatted Kling / Pippit AI video scene prompts with timestamps, camera instructions, and lyric sync will appear here..."></textarea>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. SONG WRITER -->
+    <section id="section-songwriter" class="tab-content hidden space-y-4">
+      <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl space-y-4">
+        <div>
+          <h2 class="text-base md:text-lg font-semibold text-white flex items-center gap-2">
+            <i class="fa-solid fa-music text-pink-400"></i>
+            Professional Song & Lyric Writer
+          </h2>
+          <p class="text-xs text-gray-400">Write radio-ready verses, choruses, and bridges—then send them directly to the Music Video Studio.</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-gray-300 mb-1">Song Theme / Vibe</label>
+            <input type="text" id="song-theme" placeholder="e.g. Grinding for success, late night city drive..." class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-gray-100 focus:outline-none focus:border-indigo-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-300 mb-1">Musical Genre</label>
+            <select id="song-genre" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-gray-100 focus:outline-none focus:border-indigo-500">
+              <option value="hiphop">Hip-Hop / Rap (Punchlines & Flow)</option>
+              <option value="pop">Pop Anthem (Catchy Hook)</option>
+              <option value="rb">R&B / Soul (Emotional Melody)</option>
+              <option value="acoustic">Acoustic / Folk (Storytelling)</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="button" onclick="generateSongLyrics()" class="w-full py-3 bg-pink-600 hover:bg-pink-700 text-white font-semibold rounded-xl text-xs md:text-sm transition flex items-center justify-center gap-2 shadow-lg shadow-pink-600/20">
+          <i class="fa-solid fa-microphone-lines"></i> Generate Song Lyrics
+        </button>
+
+        <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 space-y-3">
+          <div class="flex flex-wrap justify-between items-center gap-2">
+            <span class="text-xs text-gray-400">Generated Lyrics Output</span>
+            <div class="flex gap-2">
+              <button type="button" onclick="sendLyricsToMotionStudio()" class="px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-xs font-semibold transition">
+                <i class="fa-solid fa-film mr-1"></i> Send to MV Studio
+              </button>
+              <button type="button" onclick="copyToClipboard('song-output')" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-pink-300 rounded-lg text-xs font-medium transition">
+                <i class="fa-regular fa-copy"></i> Copy
+              </button>
+            </div>
+          </div>
+          <textarea id="song-output" rows="8" class="w-full bg-transparent text-xs md:text-sm text-gray-200 focus:outline-none resize-none custom-scrollbar" placeholder="Your song lyrics will appear here..."></textarea>
+          <div class="flex justify-end pt-2 border-t border-slate-800">
+            <button type="button" onclick="saveSongAsDraft()" class="px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-medium hover:bg-indigo-700 transition">Save as Draft</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. STORY & SCRIPT WRITER -->
+    <section id="section-story" class="tab-content hidden space-y-4">
+      <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl space-y-4">
+        <div>
+          <h2 class="text-base md:text-lg font-semibold text-white flex items-center gap-2">
+            <i class="fa-solid fa-feather-pointed text-purple-400"></i>
+            AI Story & Movie Script Writer
+          </h2>
+          <p class="text-xs text-gray-400">Write gripping narrative stories, motivational scripts, or cinematic video outlines instantly.</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-gray-300 mb-1">Story Topic / Core Premise</label>
+            <input type="text" id="story-topic" placeholder="e.g. A lone pilot discovers a signal from deep space..." class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-gray-100 focus:outline-none focus:border-indigo-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-300 mb-1">Genre / Style</label>
+            <select id="story-genre" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-gray-100 focus:outline-none focus:border-indigo-500">
+              <option value="scifi">Sci-Fi / Thriller Movie</option>
+              <option value="motivational">Motivational & Philosophical</option>
+              <option value="drama">Emotional Drama / Life Lesson</option>
+              <option value="documentary">Cinematic Documentary Script</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="button" onclick="generateAiStory()" class="w-full py-3 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-xl text-xs md:text-sm transition flex items-center justify-center gap-2 shadow-lg shadow-purple-600/20">
+          <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Full Story & Script
+        </button>
+
+        <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 space-y-3">
+          <div class="flex flex-wrap justify-between items-center gap-2">
+            <span class="text-xs text-gray-400">Generated Narrative Output</span>
+            <div class="flex gap-2">
+              <button type="button" onclick="sendStoryToMotionStudio()" class="px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-xs font-semibold transition">
+                <i class="fa-solid fa-film mr-1"></i> Send to Movie Studio
+              </button>
+              <button type="button" onclick="copyToClipboard('story-output')" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-purple-300 rounded-lg text-xs font-medium transition">
+                <i class="fa-regular fa-copy"></i> Copy
+              </button>
+            </div>
+          </div>
+          <textarea id="story-output" rows="8" class="w-full bg-transparent text-xs md:text-sm text-gray-200 focus:outline-none resize-none custom-scrollbar" placeholder="Your generated story or movie script will appear here..."></textarea>
+          <div class="flex justify-end pt-2 border-t border-slate-800">
+            <button type="button" onclick="saveStoryAsDraft()" class="px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-medium hover:bg-indigo-700 transition">Save as Draft</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. CANVAS THUMBNAIL STUDIO -->
+    <section id="section-thumbnail" class="tab-content hidden space-y-4">
+      <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl space-y-4">
+        <div>
+          <h2 class="text-base md:text-lg font-semibold text-white flex items-center gap-2">
+            <i class="fa-solid fa-image text-amber-400"></i>
+            Canvas Thumbnail Studio (JPEG / PNG Export)
+          </h2>
+          <p class="text-xs text-gray-400">Design high-CTR thumbnails and download them directly to your device.</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-gray-300 mb-1">Main Thumbnail Text</label>
+            <input type="text" id="thumb-main-text" value="OFFICIAL MV" oninput="drawThumbnail()" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-gray-100 focus:outline-none focus:border-indigo-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-300 mb-1">Subtitle / Secondary Text</label>
+            <input type="text" id="thumb-sub-text" value="4K CINEMATIC PREMIERE" oninput="drawThumbnail()" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-gray-100 focus:outline-none focus:border-indigo-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-300 mb-1">Background Gradient Theme</label>
+            <select id="thumb-bg-theme" onchange="drawThumbnail()" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-gray-100 focus:outline-none focus:border-indigo-500">
+              <option value="cyber">Cyberpunk Cyan/Purple</option>
+              <option value="fire">Fire & Electric Orange/Red</option>
+              <option value="matrix">Matrix Emerald Green</option>
+              <option value="midnight">Deep Midnight Dark</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-300 mb-1">Badge / Accent Tag</label>
+            <input type="text" id="thumb-badge" value="APEX MOTION" oninput="drawThumbnail()" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-gray-100 focus:outline-none focus:border-indigo-500">
+          </div>
+        </div>
+
+        <div class="flex flex-col items-center justify-center bg-slate-950 border border-slate-800 rounded-2xl p-4 space-y-4">
+          <div class="w-full max-w-xl aspect-[16/9] relative rounded-xl overflow-hidden shadow-2xl border border-slate-700">
+            <canvas id="thumbnailCanvas" width="960" height="540" class="w-full h-full object-contain"></canvas>
+          </div>
+
+          <div class="flex flex-wrap gap-2 w-full max-w-xl justify-center">
+            <button type="button" onclick="downloadThumbnail('jpeg')" class="flex-1 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-lg">
+              <i class="fa-solid fa-download"></i> Download JPEG
+            </button>
+            <button type="button" onclick="downloadThumbnail('png')" class="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-lg">
+              <i class="fa-solid fa-download"></i> Download PNG
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. SEO ENGINE SECTION -->
+    <section id="section-seo" class="tab-content hidden space-y-4">
+      <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl space-y-4">
+        <div>
+          <h2 class="text-base md:text-lg font-semibold text-white flex items-center gap-2">
+            <i class="fa-solid fa-chart-line text-emerald-400"></i>
+            Video & Music SEO Metadata Engine
+          </h2>
+          <p class="text-xs text-gray-400">Generate high-CTR titles, descriptions, and comma-separated tags.</p>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-2">
+          <input type="text" id="seo-keyword-input" placeholder="e.g. AI Music Video 2026..." class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-xs sm:text-sm text-gray-100 focus:outline-none focus:border-indigo-500">
+          <button type="button" onclick="runSeoAnalysis()" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl text-xs md:text-sm transition flex items-center justify-center gap-2 shrink-0">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> Generate SEO
+          </button>
+        </div>
+
+        <div id="seo-results-area" class="hidden space-y-4 pt-2">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-center">
+              <span class="text-xs text-gray-400 block mb-1">Search Volume</span>
+              <span id="metric-volume" class="text-base font-bold text-emerald-400">90/100 (High)</span>
+            </div>
+            <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-center">
+              <span class="text-xs text-gray-400 block mb-1">Competition</span>
+              <span id="metric-competition" class="text-base font-bold text-amber-400">Medium</span>
+            </div>
+            <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-center">
+              <span class="text-xs text-gray-400 block mb-1">SEO Score</span>
+              <span id="metric-overall" class="text-base font-bold text-indigo-400">94/100</span>
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <label class="block text-xs font-semibold text-gray-300">High-CTR Titles</label>
+            <div id="seo-titles-list" class="space-y-2"></div>
+          </div>
+
+          <div class="space-y-2">
+            <div class="flex justify-between items-center">
+              <label class="block text-xs font-semibold text-gray-300">Optimized Description & Hashtags</label>
+              <button type="button" onclick="copyToClipboard('seo-desc-output')" class="text-xs text-indigo-400 hover:text-indigo-300"><i class="fa-regular fa-copy"></i> Copy</button>
+            </div>
+            <textarea id="seo-desc-output" rows="4" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-xs text-gray-200 focus:outline-none resize-none custom-scrollbar"></textarea>
+          </div>
+
+          <div class="space-y-2">
+            <label class="block text-xs font-semibold text-gray-300">Comma-Separated Tags</label>
+            <div class="flex gap-2">
+              <input type="text" id="seo-tags-output" readonly class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-gray-300">
+              <button type="button" onclick="copyToClipboard('seo-tags-output')" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-medium transition">Copy Tags</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. SOCIAL GROWTH AUDITOR -->
+    <section id="section-audit" class="tab-content hidden space-y-4">
+      <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl space-y-4">
+        <div>
+          <h2 class="text-base md:text-lg font-semibold text-white flex items-center gap-2">
+            <i class="fa-solid fa-bullseye text-cyan-400"></i>
+            Social Channel Growth Auditor
+          </h2>
+          <p class="text-xs text-gray-400">Enter your channel handle or URL for platform-specific algorithm checklists.</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <div class="sm:col-span-2">
+            <input type="text" id="audit-link-input" placeholder="e.g. @apexmobility" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-xs sm:text-sm text-gray-100 focus:outline-none focus:border-indigo-500">
+          </div>
+          <div>
+            <select id="audit-platform" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-3 text-xs sm:text-sm text-gray-100 focus:outline-none focus:border-indigo-500">
+              <option value="youtube">YouTube</option>
+              <option value="tiktok">TikTok</option>
+              <option value="instagram">Instagram Reels</option>
+              <option value="facebook">Facebook</option>
+              <option value="twitter">X / Twitter</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="button" onclick="runSocialAudit()" class="w-full py-3 bg-cyan-600 hover:bg-cyan-700 text-white font-semibold rounded-xl text-xs md:text-sm transition flex items-center justify-center gap-2">
+          <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Growth Strategy
+        </button>
+
+        <div id="audit-results-box" class="hidden space-y-3 pt-2">
+          <div class="bg-slate-950 border border-cyan-500/30 rounded-xl p-4 space-y-3">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+              <h3 class="text-xs sm:text-sm font-bold text-cyan-400">Audit: <span id="audit-target-display" class="text-white"></span></h3>
+              <span class="text-[10px] px-2 py-0.5 bg-cyan-500/10 text-cyan-300 rounded-full font-semibold">Optimized</span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+              <div class="bg-slate-900 p-3 rounded-xl space-y-1">
+                <h4 class="font-bold text-amber-400">Algorithm Blueprint</h4>
+                <p id="audit-blueprint-text" class="text-gray-300"></p>
+              </div>
+              <div class="bg-slate-900 p-3 rounded-xl space-y-1">
+                <h4 class="font-bold text-emerald-400">Posting Schedule</h4>
+                <p id="audit-timing-text" class="text-gray-300"></p>
+              </div>
+            </div>
+            <ul id="audit-suggestions-list" class="list-disc list-inside space-y-1 text-xs text-gray-300 bg-slate-900 p-3 rounded-xl"></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. VIRAL HOOKS SECTION -->
+    <section id="section-hooks" class="tab-content hidden space-y-4">
+      <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-4">
+          <div>
+            <h2 class="text-base md:text-lg font-semibold text-white flex items-center gap-2">
+              <i class="fa-solid fa-fire text-amber-400"></i>
+              High-Retention Video Hooks
+            </h2>
+          </div>
+          <input type="text" id="hook-search" oninput="renderHooks()" placeholder="Search hooks..." class="w-full md:w-56 bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-gray-200 focus:outline-none focus:border-indigo-500">
+        </div>
+        
+        <div class="flex flex-wrap gap-2 mb-4">
+          <button type="button" onclick="filterHooks('all')" class="hook-cat-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-indigo-600 text-white">All</button>
+          <button type="button" onclick="filterHooks('curiosity')" class="hook-cat-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 text-gray-300">Curiosity</button>
+          <button type="button" onclick="filterHooks('story')" class="hook-cat-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 text-gray-300">Storytelling</button>
+          <button type="button" onclick="filterHooks('controversial')" class="hook-cat-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 text-gray-300">Controversial</button>
+          <button type="button" onclick="filterHooks('educational')" class="hook-cat-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 text-gray-300">Educational</button>
+        </div>
+
+        <div id="hooks-container" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+      </div>
+    </section>
+
+    <!-- 8. SAVED DRAFTS -->
+    <section id="section-drafts" class="tab-content hidden space-y-4">
+      <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h2 class="text-base md:text-lg font-semibold text-white flex items-center gap-2">
+              <i class="fa-solid fa-bookmark text-amber-400"></i>
+              Saved Local Drafts
+            </h2>
+          </div>
+          <button type="button" onclick="clearAllDrafts()" class="text-xs text-red-400 hover:text-red-300 transition">Clear All</button>
+        </div>
+        <div id="drafts-list" class="space-y-3"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="max-w-6xl w-full mx-auto px-4 py-5 text-center text-xs text-gray-500 border-t border-slate-800/80 mt-auto">
+    APEX MOTION AI Studio · Developed by APEX MOBILITY SYSTEM
+  </footer>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-5 right-5 bg-indigo-600 text-white px-4 py-3 rounded-xl shadow-2xl transform translate-y-24 opacity-0 transition-all duration-300 flex items-center gap-2 text-xs sm:text-sm z-50 border border-indigo-400/30 pointer-events-none">
+    <i class="fa-solid fa-circle-check text-emerald-300"></i>
+    <span id="toast-msg">Copied!</span>
+  </div>
+
+  <!-- Hidden Audio Element for Safe Duration Reading -->
+  <audio id="hidden-audio-probe" preload="metadata" class="hidden"></audio>
+
+  <script>
+    const STORAGE_KEY = 'apex_motion_ai_studio_v1';
+    let motionMode = 'mv';
+    let uploadedAudioName = '';
+    let uploadedAudioDuration = 0;
+
+    const hooksData = [
+      { category: 'curiosity', text: 'If you are doing [topic], you are probably doing it wrong.' },
+      { category: 'curiosity', text: 'This secret feature in [tool/app] will save you hours of work.' },
+      { category: 'curiosity', text: 'Most people don’t know this trick about [subject]...' },
+      { category: 'story', text: 'Nobody talks about what happens when you actually achieve [goal]...' },
+      { category: 'story', text: 'I tried [strategy] for 30 days and here is what happened.' },
+      { category: 'story', text: 'The exact moment everything changed for my content strategy was...' },
+      { category: 'controversial', text: 'Unpopular opinion: Stop focusing on [common advice].' },
+      { category: 'controversial', text: 'Why most creators fail at [niche] in 2026.' },
+      { category: 'controversial', text: 'Everything you’ve been told about [topic] is a complete lie.' },
+      { category: 'educational', text: 'Here are 3 quick steps to master [skill] starting today.' },
+      { category: 'educational', text: 'The exact framework I use to create [result] every single week.' },
+      { category: 'educational', text: 'Stop scrolling if you want to learn how to build [project].' }
+    ];
+
+    let drafts = [];
+    try {
+      drafts = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    } catch (e) {
+      drafts = [];
+    }
+    let currentFilter = 'all';
+
+    // WebView-Safe Clipboard Copy (Prevents WebIntoApps crashes)
+    function copyText(str) {
+      if (!str) { showToast('Nothing to copy.'); return; }
+      try {
+        const tempArea = document.createElement('textarea');
+        tempArea.value = str;
+        tempArea.setAttribute('readonly', '');
+        tempArea.style.position = 'fixed';
+        tempArea.style.left = '-9999px';
+        document.body.appendChild(tempArea);
+        tempArea.select();
+        tempArea.setSelectionRange(0, 99999);
+        const ok = document.execCommand('copy');
+        document.body.removeChild(tempArea);
+        if (ok) {
+          showToast('Copied to clipboard!');
+          return;
+        }
+      } catch (e) {}
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(str)
+          .then(() => showToast('Copied to clipboard!'))
+          .catch(() => showToast('Select text manually to copy.'));
+      } else {
+        showToast('Select text manually to copy.');
+      }
+    }
+
+    function copyToClipboard(id) {
+      const el = document.getElementById(id);
+      if (el && el.value) copyText(el.value);
+      else showToast('Nothing to copy.');
+    }
+
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('bg-indigo-600', 'text-white', 'shadow-md');
+        btn.classList.add('bg-slate-800', 'text-gray-400');
+      });
+
+      const targetSection = document.getElementById('section-' + tabName);
+      if (targetSection) targetSection.classList.remove('hidden');
+
+      const activeBtn = document.getElementById('tab-' + tabName);
+      if (activeBtn) {
+        activeBtn.classList.remove('bg-slate-800', 'text-gray-400');
+        activeBtn.classList.add('bg-indigo-600', 'text-white', 'shadow-md');
+      }
+
+      if (tabName === 'thumbnail') setTimeout(drawThumbnail, 50);
+      if (tabName === 'drafts') renderDrafts();
+    }
+
+    // --- MOVIE & MUSIC VIDEO STUDIO LOGIC ---
+    function setMotionMode(mode) {
+      motionMode = mode;
+      const mvBtn = document.getElementById('mode-btn-mv');
+      const movieBtn = document.getElementById('mode-btn-movie');
+      const audioBox = document.getElementById('mv-audio-box');
+      const inputLabel = document.getElementById('motion-input-label');
+
+      if (mode === 'mv') {
+        mvBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white transition';
+        movieBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-400 hover:text-white transition';
+        audioBox.classList.remove('hidden');
+        inputLabel.innerText = 'Paste Song Lyrics (Each line or stanza generates a synced Music Video prompt)';
+      } else {
+        movieBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white transition';
+        mvBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-400 hover:text-white transition';
+        audioBox.classList.add('hidden');
+        inputLabel.innerText = 'Paste Movie Storyline or Scene Beats (Each line generates a cinematic scene prompt)';
+      }
+    }
+
+    function handleAudioUpload(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      uploadedAudioName = file.name;
+      const infoEl = document.getElementById('mv-audio-info');
+      infoEl.classList.remove('hidden');
+      infoEl.innerText = 'Loaded track: ' + file.name + ' (Reading duration...)';
+
+      try {
+        const objectUrl = URL.createObjectURL(file);
+        const probe = document.getElementById('hidden-audio-probe');
+        probe.src = objectUrl;
+        probe.onloadedmetadata = function () {
+          uploadedAudioDuration = Math.round(probe.duration || 0);
+          const mins = Math.floor(uploadedAudioDuration / 60);
+          const secs = String(uploadedAudioDuration % 60).padStart(2, '0');
+          infoEl.innerText = 'Synced Track: ' + file.name + ' (' + mins + ':' + secs + ' total duration)';
+          URL.revokeObjectURL(objectUrl);
+        };
+      } catch (e) {
+        infoEl.innerText = 'Loaded Track: ' + file.name;
+      }
+    }
+
+    function loadSampleLyricsForMotion() {
+      document.getElementById('motion-title').value = 'City Lights & Hustle';
+      document.getElementById('motion-script-input').value =
+        '[Verse 1]\nNeon reflections on the midnight rain, driving through the city with a dream in my veins\n' +
+        'Every late night coding under fluorescent glow, building an empire that the world don’t know\n' +
+        '[Chorus]\nWe rise up from the shadows into golden light, turning every struggle into power tonight!';
+      showToast('Sample lyrics inserted!');
+    }
+
+    function formatTime(totalSeconds) {
+      const m = Math.floor(totalSeconds / 60);
+      const s = String(Math.floor(totalSeconds % 60)).padStart(2, '0');
+      return m + ':' + s;
+    }
+
+    function generateMotionPrompts() {
+      const title = document.getElementById('motion-title').value.trim() || 'Untitled Project';
+      const style = document.getElementById('motion-style').value;
+      const camera = document.getElementById('motion-camera').value;
+      const ratio = document.getElementById('motion-ratio').value;
+      const rawText = document.getElementById('motion-script-input').value.trim();
+
+      if (!rawText) {
+        showToast('Please enter song lyrics or a movie script first.');
+        return;
+      }
+
+      const lines = rawText.split(/\n+/).map(l => l.trim()).filter(l => l.length > 0);
+      const sceneDuration = uploadedAudioDuration > 0
+        ? Math.max(4, Math.floor(uploadedAudioDuration / lines.length))
+        : 5;
+
+      let output = '=== APEX MOTION AI STUDIO | ' + (motionMode === 'mv' ? 'MUSIC VIDEO' : 'MOVIE') + ' PROMPT SHEET ===\n';
+      output += 'PROJECT: ' + title + '\n';
+      if (motionMode === 'mv' && uploadedAudioName) {
+        output += 'AUDIO TRACK: ' + uploadedAudioName + '\n';
+      }
+      output += 'ASPECT RATIO: ' + ratio + '\n';
+      output += 'MASTER STYLE: ' + style + '\n';
+      output += '============================================================\n\n';
+
+      let currentSec = 0;
+      let sceneNum = 1;
+
+      lines.forEach(line => {
+        const isSectionTag = /^\[.*\]$/.test(line);
+        if (isSectionTag) {
+          output += '--- ' + line.toUpperCase() + ' ---\n';
+          return;
+        }
+        const startT = formatTime(currentSec);
+        const endT = formatTime(currentSec + sceneDuration);
+        currentSec += sceneDuration;
+
+        output += '[SCENE ' + String(sceneNum).padStart(2, '0') + ' | ' + startT + ' - ' + endT + ']\n';
+        output += (motionMode === 'mv' ? 'LYRIC CUE: "' : 'SCRIPT BEAT: "') + line + '"\n';
+        output += 'AI VIDEO PROMPT (Kling / Pippit): Visual depiction of ' + line.replace(/"/g, '') +
+          '. ' + style + '. Camera movement: ' + camera + '. High dynamic range, 24fps cinematic motion blur, --ar ' + ratio.split(' ')[0] + '\n\n';
+        sceneNum++;
+      });
+
+      document.getElementById('motion-output').value = output;
+      document.getElementById('motion-scene-badge').innerText = (sceneNum - 1) + ' Scenes';
+      showToast('Generated ' + (sceneNum - 1) + ' AI video scene prompts!');
+    }
+
+    function saveMotionAsDraft() {
+      const content = document.getElementById('motion-output').value;
+      if (!content) { showToast('Generate prompts first before saving.'); return; }
+      const title = document.getElementById('motion-title').value.trim() || 'Untitled Motion Project';
+      drafts.unshift({ id: Date.now(), title: (motionMode === 'mv' ? 'MV Prompts: ' : 'Movie Prompts: ') + title, content });
+      saveDraftsStorage();
+      showToast('Saved to drafts!');
+    }
+
+    // --- SONG WRITER & STORY WRITER ---
+    function generateSongLyrics() {
+      const theme = document.getElementById('song-theme').value.trim() || 'Ambition & Success';
+      const genre = document.getElementById('song-genre').value;
+
+      const lyrics =
+        '[TITLE: ' + theme.toUpperCase() + ' - ' + genre.toUpperCase() + ']\n\n' +
+        '[Verse 1]\nStarted in the dark with a vision in my mind,\nLeaving all the doubt and the shadows behind.\nEvery single step on the midnight street,\nTurning heavy pressure into rhythm and heat.\n\n' +
+        '[Chorus]\nWe rise up higher, lighting up the sky,\nUnstoppable fire, watch the legends fly!\nNo turning back now, everything is clear,\nThe future belongs to the ones right here.\n\n' +
+        '[Verse 2]\nCity lights flashing through the windshield glass,\nEvery obstacle is fading in the past.\nBuilt from the ground with a fearless soul,\nLocked on the target, in complete control.';
+
+      document.getElementById('song-output').value = lyrics;
+      showToast('Song lyrics generated!');
+    }
+
+    function sendLyricsToMotionStudio() {
+      const lyrics = document.getElementById('song-output').value.trim();
+      if (!lyrics) { showToast('Generate or enter lyrics first.'); return; }
+      document.getElementById('motion-title').value = document.getElementById('song-theme').value.trim() || 'New Music Video';
+      document.getElementById('motion-script-input').value = lyrics;
+      setMotionMode('mv');
+      switchTab('motion');
+      generateMotionPrompts();
+    }
+
+    function saveSongAsDraft() {
+      const content = document.getElementById('song-output').value;
+      if (!content) { showToast('Nothing to save.'); return; }
+      drafts.unshift({ id: Date.now(), title: 'Song: ' + (document.getElementById('song-theme').value || 'Untitled'), content });
+      saveDraftsStorage();
+      showToast('Saved to drafts!');
+    }
+
+    function generateAiStory() {
+      const topic = document.getElementById('story-topic').value.trim() || 'A journey beyond the horizon';
+      const genre = document.getElementById('story-genre').value;
+
+      const storyText =
+        '[ACT 1 - OPENING]\nRain pours over a quiet metropolis as our protagonist uncovers a hidden truth about ' + topic + '.\n\n' +
+        '[ACT 2 - CONFRONTATION]\nAgainst impossible odds and ticking clocks, every choice demands courage and sacrifice (' + genre.toUpperCase() + ' tone).\n\n' +
+        '[ACT 3 - CLIMAX]\nAt the edge of dawn, the final breakthrough transforms everything forever.';
+
+      document.getElementById('story-output').value = storyText;
+      showToast('Movie script generated!');
+    }
+
+    function sendStoryToMotionStudio() {
+      const story = document.getElementById('story-output').value.trim();
+      if (!story) { showToast('Generate or enter a script first.'); return; }
+      document.getElementById('motion-title').value = document.getElementById('story-topic').value.trim() || 'New AI Movie';
+      document.getElementById('motion-script-input').value = story;
+      setMotionMode('movie');
+      switchTab('motion');
+      generateMotionPrompts();
+    }
+
+    function saveStoryAsDraft() {
+      const content = document.getElementById('story-output').value;
+      if (!content) { showToast('Nothing to save.'); return; }
+      drafts.unshift({ id: Date.now(), title: 'Script: ' + (document.getElementById('story-topic').value || 'Untitled'), content });
+      saveDraftsStorage();
+      showToast('Saved to drafts!');
+    }
+
+    // --- 512x512 PNG APP ICON GENERATOR (<256KB FOR WEBINTOAPPS) ---
+    function generateAndDownloadAppIcon() {
+      const iconCanvas = document.createElement('canvas');
+      iconCanvas.width = 512;
+      iconCanvas.height = 512;
+      const ctx = iconCanvas.getContext('2d');
+
+      // Deep indigo-to-purple-to-slate gradient background
+      const bg = ctx.createLinearGradient(0, 0, 512, 512);
+      bg.addColorStop(0, '#1e1b4b');
+      bg.addColorStop(0.5, '#4f46e5');
+      bg.addColorStop(1, '#7c3aed');
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, 512, 512);
+
+      // Subtle glowing accent ring
+      ctx.strokeStyle = 'rgba(251, 191, 36, 0.85)';
+      ctx.lineWidth = 14;
+      ctx.beginPath();
+      ctx.arc(256, 256, 195, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Central Cinema Play Triangle
+      ctx.fillStyle = '#fbbf24';
+      ctx.beginPath();
+      ctx.moveTo(215, 165);
+      ctx.lineTo(345, 256);
+      ctx.lineTo(215, 347);
+      ctx.closePath();
+      ctx.fill();
+
+      // Clean Bold App Initials at Bottom
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 42px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('APEX MOTION', 256, 425);
+
+      const dataUrl = iconCanvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.download = 'apex_motion_ai_studio_icon_512x512.png';
+      link.href = dataUrl;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast('512x512 PNG App Icon downloaded!');
+    }
+
+    // --- THUMBNAIL STUDIO ---
+    function drawThumbnail() {
+      const canvas = document.getElementById('thumbnailCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      const mainText = document.getElementById('thumb-main-text').value || 'OFFICIAL MV';
+      const subText = document.getElementById('thumb-sub-text').value || '4K CINEMATIC';
+      const badgeText = document.getElementById('thumb-badge').value || 'APEX MOTION';
+      const theme = document.getElementById('thumb-bg-theme').value;
+
+      const grad = ctx.createLinearGradient(0, 0, 960, 540);
+      if (theme === 'fire') {
+        grad.addColorStop(0, '#7f1d1d'); grad.addColorStop(1, '#ea580c');
+      } else if (theme === 'cyber') {
+        grad.addColorStop(0, '#312e81'); grad.addColorStop(1, '#06b6d4');
+      } else if (theme === 'matrix') {
+        grad.addColorStop(0, '#022c22'); grad.addColorStop(1, '#10b981');
+      } else {
+        grad.addColorStop(0, '#030712'); grad.addColorStop(1, '#1f2937');
+      }
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 960, 540);
+
+      ctx.fillStyle = 'rgba(0,0,0,0.35)';
+      ctx.fillRect(0, 0, 960, 540);
+
+      if (badgeText) {
+        ctx.fillStyle = '#f59e0b';
+        ctx.fillRect(60, 60, 230, 48);
+        ctx.fillStyle = '#000000';
+        ctx.font = 'bold 22px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(badgeText.toUpperCase(), 175, 92);
+      }
+
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '900 68px sans-serif';
+      ctx.fillText(mainText.toUpperCase(), 60, 260);
+
+      ctx.fillStyle = '#38bdf8';
+      ctx.font = 'bold 42px sans-serif';
+      ctx.fillText(subText.toUpperCase(), 60, 335);
+    }
+
+    function downloadThumbnail(format) {
+      const canvas = document.getElementById('thumbnailCanvas');
+      if (!canvas) return;
+      const mime = format === 'png' ? 'image/png' : 'image/jpeg';
+      const ext = format === 'png' ? 'png' : 'jpg';
+      const link = document.createElement('a');
+      link.download = 'apex_motion_thumb_' + Date.now() + '.' + ext;
+      link.href = canvas.toDataURL(mime, 0.92);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast('Thumbnail downloaded as ' + ext.toUpperCase() + '!');
+    }
+
+    // --- SEO & AUDITOR & HOOKS ---
+    function runSeoAnalysis() {
+      const keyword = document.getElementById('seo-keyword-input').value.trim();
+      if (!keyword) { showToast('Please enter a target keyword.'); return; }
+
+      document.getElementById('seo-results-area').classList.remove('hidden');
+      const titlesList = document.getElementById('seo-titles-list');
+      titlesList.innerHTML = '';
+      const generatedTitles = [
+        keyword + ' (Official AI Music Video 4K)',
+        'How I Made ' + keyword + ' Using AI Prompts',
+        keyword + ' — Full Cinematic Premiere (2026)'
+      ];
+
+      generatedTitles.forEach(t => {
+        const div = document.createElement('div');
+        div.className = 'bg-slate-950 border border-slate-800 p-3 rounded-xl flex justify-between items-center gap-3';
+        const span = document.createElement('span');
+        span.className = 'text-xs text-gray-200 font-medium';
+        span.innerText = t;
+        const btn = document.createElement('button');
+        btn.className = 'px-3 py-1.5 bg-slate-800 hover:bg-indigo-600 text-gray-300 hover:text-white rounded-lg text-xs shrink-0 transition';
+        btn.innerText = 'Copy';
+        btn.onclick = () => copyText(t);
+        div.appendChild(span);
+        div.appendChild(btn);
+        titlesList.appendChild(div);
+      });
+
+      document.getElementById('seo-desc-output').value =
+        'Watch ' + keyword + ' — crafted with APEX MOTION AI Studio.\n\n#' + keyword.replace(/\s+/g, '') + ' #AIMusicVideo #AIMovie #Creator';
+      document.getElementById('seo-tags-output').value =
+        keyword + ', ' + keyword + ' 2026, ai music video, ai cinema, apex motion';
+      showToast('SEO metadata generated!');
+    }
+
+    function runSocialAudit() {
+      const linkInput = document.getElementById('audit-link-input').value.trim() || '@apexmobility';
+      const platform = document.getElementById('audit-platform').value;
+      document.getElementById('audit-results-box').classList.remove('hidden');
+      document.getElementById('audit-target-display').innerText = linkInput;
+
+      const map = {
+        youtube: ['Prioritize 16:9 high-contrast thumbnails and strong first-15s hooks.', 'Best upload window: 2:00 PM – 4:00 PM.', ['Add chapter timestamps', 'Cross-post 9:16 teaser Shorts']],
+        tiktok: ['Hook viewers inside the first 2 seconds with visual movement.', 'Best posting window: 6:00 PM – 9:00 PM.', ['Use 9:16 vertical framing', 'Add bold center captions']],
+        instagram: ['Pair aesthetic Reels with carousels to maximize saves and shares.', 'Best window: 11:00 AM – 1:00 PM & 7:00 PM.', ['Pin top 3 Reels', 'Use 5–8 targeted niche hashtags']],
+        facebook: ['Focus on shareable native videos and community discussion prompts.', 'Best window: 1:00 PM – 4:00 PM.', ['Post behind-the-scenes clips', 'Ask a question in the first line']],
+        twitter: ['Post visual clips alongside short breakdown threads.', 'Best window: 8:00 AM – 10:00 AM.', ['Lead with a bold hook post', 'Keep clips under 45 seconds']]
+      };
+
+      const data = map[platform] || map.youtube;
+      document.getElementById('audit-blueprint-text').innerText = data[0];
+      document.getElementById('audit-timing-text').innerText = data[1];
+      const listEl = document.getElementById('audit-suggestions-list');
+      listEl.innerHTML = '';
+      data[2].forEach(s => {
+        const li = document.createElement('li');
+        li.innerText = s;
+        listEl.appendChild(li);
+      });
+      showToast('Growth audit ready!');
+    }
+
+    function renderHooks(filter = currentFilter) {
+      currentFilter = filter;
+      const searchVal = (document.getElementById('hook-search').value || '').toLowerCase();
+      const container = document.getElementById('hooks-container');
+      container.innerHTML = '';
+
+      let filtered = filter === 'all' ? hooksData : hooksData.filter(h => h.category === filter);
+      if (searchVal) filtered = filtered.filter(h => h.text.toLowerCase().includes(searchVal));
+
+      filtered.forEach(h => {
+        const card = document.createElement('div');
+        card.className = 'bg-slate-950 border border-slate-800 p-3.5 rounded-xl flex justify-between items-center gap-3';
+        const p = document.createElement('p');
+        p.className = 'text-xs text-gray-200';
+        p.innerText = h.text;
+        const btn = document.createElement('button');
+        btn.className = 'px-3 py-1.5 bg-slate-800 text-gray-300 hover:text-white hover:bg-indigo-600 rounded-lg text-xs font-medium shrink-0 transition';
+        btn.innerText = 'Copy';
+        btn.onclick = () => copyText(h.text);
+        card.appendChild(p);
+        card.appendChild(btn);
+        container.appendChild(card);
+      });
+    }
+
+    function filterHooks(cat) { renderHooks(cat); }
+
+    // --- DRAFTS STORAGE ---
+    function saveDraftsStorage() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(drafts));
+      } catch (e) {}
+      const countEl = document.getElementById('draft-count');
+      if (countEl) countEl.innerText = drafts.length;
+    }
+
+    function renderDrafts() {
+      const list = document.getElementById('drafts-list');
+      if (!list) return;
+      list.innerHTML = '';
+      if (drafts.length === 0) {
+        list.innerHTML = '<p class="text-xs text-gray-500 italic text-center py-6">No saved drafts yet.</p>';
+        return;
+      }
+      drafts.forEach(d => {
+        const item = document.createElement('div');
+        item.className = 'bg-slate-950 border border-slate-800 p-4 rounded-xl flex flex-col sm:flex-row justify-between items-start gap-3';
+
+        const textWrap = document.createElement('div');
+        textWrap.className = 'space-y-1 w-full overflow-hidden';
+        const h4 = document.createElement('h4');
+        h4.className = 'text-xs font-semibold text-amber-400';
+        h4.innerText = d.title;
+        const p = document.createElement('p');
+        p.className = 'text-xs text-gray-300 whitespace-pre-wrap break-words max-h-32 overflow-y-auto';
+        p.innerText = d.content;
+        textWrap.appendChild(h4);
+        textWrap.appendChild(p);
+
+        const actions = document.createElement('div');
+        actions.className = 'flex gap-2 shrink-0';
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-gray-200 text-xs rounded-lg transition';
+        copyBtn.innerText = 'Copy';
+        copyBtn.onclick = () => copyText(d.content);
+
+        const delBtn = document.createElement('button');
+        delBtn.className = 'px-3 py-1.5 bg-red-900/30 text-red-400 hover:bg-red-900/50 text-xs rounded-lg transition';
+        delBtn.innerText = 'Delete';
+        delBtn.onclick = () => deleteDraft(d.id);
+
+        actions.appendChild(copyBtn);
+        actions.appendChild(delBtn);
+        item.appendChild(textWrap);
+        item.appendChild(actions);
+        list.appendChild(item);
+      });
+    }
+
+    function deleteDraft(id) {
+      drafts = drafts.filter(d => d.id !== id);
+      saveDraftsStorage();
+      renderDrafts();
+      showToast('Draft deleted.');
+    }
+
+    function clearAllDrafts() {
+      drafts = [];
+      saveDraftsStorage();
+      renderDrafts();
+      showToast('All drafts cleared.');
+    }
+
+    function exportAllDraftsJson() {
+      const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(drafts, null, 2));
+      const a = document.createElement('a');
+      a.setAttribute('href', dataStr);
+      a.setAttribute('download', 'apex_motion_backup_' + new Date().toISOString().slice(0, 10) + '.json');
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      showToast('Backup downloaded!');
+    }
+
+    let toastTimer = null;
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      if (!toast) return;
+      document.getElementById('toast-msg').innerText = msg;
+      toast.classList.remove('translate-y-24', 'opacity-0');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.add('translate-y-24', 'opacity-0');
+      }, 2400);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      renderHooks();
+      saveDraftsStorage();
+    });
+  </script>
+</body>
+</html>
